@@ -1,14 +1,26 @@
 import express from 'express';
+import dotenv from "dotenv";
 import session from 'express-session';
-import passport from './config/passport';
-import connectDB from './config/db';
-import authRoutes from './routes/authRoutes';
-import eventRoutes from './routes/eventRoutes';
-import userRoutes from './routes/userRoutes';
+import passport from './config/passport.js';
+import { connectDB, createMongoStore}  from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import axios from 'axios';
 //import './config/dotenv.js';
 
-// Load environment variables from .env file
-require('dotenv').config();
+dotenv.config({
+  path: './.env'
+})
+
+// const clientID = process.env.GOOGLE_CLIENT_ID;
+// const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+// const callbackURL =  process.env.GOOGLE_CALLBACK_URL;
+
+// console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
+// console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET);
+// console.log('GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL);
+//console.log(process.env)
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,12 +28,25 @@ const PORT = process.env.PORT || 3000;
 // Connect to MongoDB
 connectDB();
 
-// Middleware for session management
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: false,
-}));
+// // Middleware for session management
+// app.use(session({
+//   secret: 'secret',
+//   resave: false,
+//   saveUninitialized: false,
+// }));
+
+// Initialize MongoDB session store
+const mongoStore = await createMongoStore();
+
+app.use(
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    store: mongoStore, // Use the MongoDB session store
+  })
+);
+
 
 // Initialize Passport
 app.use(passport.initialize());

@@ -1,15 +1,17 @@
 // routes/userRoutes.js
 
 import express from 'express';
-import isAuthenticated from '../middlewares/isAuthenticated';
-import { getUserCalendarList } from '../services/calendarService';
+import isAuthenticated from '../middlewares/isAuthenticated.js';
+import { getUserCalendarList } from '../services/calendarService.js';
 
 const router = express.Router();
 
 // Route to get user's calendars
 router.get('/calendars', isAuthenticated, async (req, res) => {
     try {
-      const userCalendars = await getUserCalendarList(req.user.accessToken);
+      const { accessToken, refreshToken } = req.user; 
+      //const { timeMin, timeMax, calendarId } = req.query;
+      const userCalendars = await getUserCalendarList(accessToken, refreshToken);
       res.json(userCalendars);
     } catch (error) {
       console.error('Error fetching user calendars:', error);

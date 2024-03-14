@@ -1,12 +1,16 @@
 // routes/authRoutes.js
 
 import express from 'express';
-import passport from '../config/passport';
+import passport from '../config/passport.js';
 
 const router = express.Router();
 
 router.get(
-  '/auth/google',
+  '/google',
+  (req, res, next) => {
+    console.log('Initiating Google authentication...');
+    next();
+  },
   passport.authenticate('google', {
     scope: [
       'profile',
@@ -19,17 +23,25 @@ router.get(
 );
 
 router.get(
-  '/auth/google/callback',
+  '/google/callback',
+  (req, res, next) => {
+    console.log('Handling Google callback...');
+    next();
+  },
   passport.authenticate('google', { failureRedirect: '/auth/google' }),
   (req, res) => {
+    console.log('Redirecting after successful authentication...');
     res.redirect('/');
   }
 );
 
-router.get('/auth/logout', (req, res) => {
+router.get('/logout', (req, res) => {
+  console.log('Logging out user...');
   req.session.destroy((err) => {
     if (err) {
-      console.log(err);
+      console.error('Error destroying session:', err);
+    } else {
+      console.log('Session destroyed successfully.');
     }
   });
   res.redirect('/');

@@ -1,16 +1,3 @@
-// // models/Event.js
-
-// import mongoose from 'mongoose';
-
-// const eventSchema = new mongoose.Schema({
-//   // Define event schema
-// });
-
-// const Event = mongoose.model('Event', eventSchema);
-
-// export default Event;
-
-// event.model.js
 
 import mongoose from 'mongoose';
 

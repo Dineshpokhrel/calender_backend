@@ -1,17 +1,31 @@
-// config/db.js
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
+import { DB_NAME } from "../constants.js";
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/myapp', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+    console.log(`\n MongoDB connected !! DB HOST : ${connectionInstance.connection.host}\n`);
+    return connectionInstance;
   } catch (error) {
-    console.error(`Error connecting to MongoDB: ${error.message}`);
+    console.log("MongoDB connection error", error);
     process.exit(1);
   }
 };
 
-export default connectDB;
+const createMongoStore = async () => {
+  // Connect to the database
+  await connectDB();
+
+  // Create MongoDB store
+  const mongoStoreOptions = {
+    mongoUrl: `${process.env.MONGODB_URI}/${DB_NAME}`, // Replace with your MongoDB connection string
+    ttl: 24 * 60 * 60, // Time to live (in seconds), set to 1 day
+  };
+
+  return MongoStore.create(mongoStoreOptions);
+};
+
+export { connectDB, createMongoStore };
+
+

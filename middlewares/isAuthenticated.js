@@ -5,7 +5,7 @@ const isAuthenticated = (req, res, next) => {
       return next();
     }
     res.status(401).json({ message: 'Unauthenticated' });
-  };
+};
   
-  export default isAuthenticated;
+export default isAuthenticated;
   
